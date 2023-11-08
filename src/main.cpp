@@ -436,11 +436,16 @@ void topDoorProcess()
 
 void emFrontDoor()
 {
-  if((topDoorState == 0) & (topDoorStep >=2))
+  delayMicroseconds(5);
+  if(emFd)
   {
-    frontDoorStep = 0;
-    frontDoorOpr =1;
+    if((topDoorState == 0) & (topDoorStep >=2))
+    {
+      frontDoorStep = 0;
+      frontDoorOpr =1;
+    }
   }
+  
   
 }
 
