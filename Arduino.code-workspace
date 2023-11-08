@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"path": "../../../Code/Arduino"
+		},
+		{
+			"name": "VendingMachineNew",
+			"path": "../../../Code/Arduino/VendingMachineNew"
+		},
+		{
+			"name": "74hc165",
+			"path": "../../../Code/Arduino/74hc165"
+		},
+		{
+			"name": "TestBoardVending",
+			"path": "../TestBoardVending"
+		},
+		{
+			"name": "VendingMachineNewFinal",
+			"path": "."
+		}
+	],
+	"settings": {}
+}
