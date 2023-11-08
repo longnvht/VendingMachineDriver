@@ -49,12 +49,16 @@ bool dataIn[16];
 bool lastDataIn[16];
 bool dataOut[24];
 bool detectPosition = false;
+bool detectFrontDoor = false;
+bool detectTopDoor = false;
 int timerDetectPosition =0;
+int timerDetectFrontDoor = 0;
+int timerDetectTopDoor = 0;
 //define value set
 
 
 int timerFrontDoor =0;
-int delayOpenTime = 50;
+int delayOpenTime = 100;
 int timerDetectTool=0;
 int spiralTimer = 0;
 
@@ -134,7 +138,7 @@ void setup()
   attachInterrupt(0, emFrontDoor, RISING);
 
 //    set timer interrupt
-  Timer1.initialize(200000); // khởi tạo timer 1 đến 0.5 giây
+  Timer1.initialize(100000); // khởi tạo timer 1 đến 0.1 giây
   Timer1.attachInterrupt(timerTick); // khai báo ngắt timer 1
 
   stopSpiral();
@@ -297,7 +301,15 @@ void frontDoorProcess()
       frontDoorStep ++;
       break;
     case 1:
-      if(dataIn[13])
+      if(dataIn[13]!= lastDataIn[13])
+      {
+        if(dataIn[13])
+        {
+          detectFrontDoor = true;
+          timerDetectFrontDoor = 0;
+        }
+      }
+      if(detectFrontDoor & (timerDetectFrontDoor >0))
       {
         frontDoorStop();
         frontDoorStep ++;
@@ -305,7 +317,7 @@ void frontDoorProcess()
         frontDoorState =1;
         frontDoorOpr =0;
       }
-
+      lastDataIn[13] = dataIn[13];
       break;
     
     }
@@ -327,13 +339,23 @@ void frontDoorProcess()
         timerFrontDoor = 0;
         frontDoorOpr =0;
       }
-      if (dataIn[12])
+      if (dataIn[12]!= lastDataIn[12])
       {
+        if(dataIn[12])
+        {
+          detectFrontDoor = true;
+          timerDetectFrontDoor = 0;
+        }
+      }
+      if(detectFrontDoor & (timerDetectFrontDoor > 0))
+      {
+        detectFrontDoor = false;
         frontDoorStop();
         frontDoorState = 0;
         frontDoorOpr = 0;
         frontDoorStep ++;
       }
+      lastDataIn[12] = dataIn[12];
       break;
     }
   }
@@ -352,13 +374,25 @@ void topDoorProcess()
       topDoorStep ++;
       break;
     case 1:
-      if(dataIn[15])
+      if(dataIn[15] != lastDataIn[15])
       {
+        if(dataIn[15])
+        {
+          detectTopDoor = true;
+          timerDetectTopDoor = 0;
+        }
+      }
+
+      if(detectTopDoor & (timerDetectTopDoor > 0))
+      {
+        detectTopDoor = false;
         topDoorStop();
         topDoorStep ++;
         topDoorState =1;
         topDoorOpr =0;
       }
+
+      lastDataIn[15] = dataIn[15];
 
       break;
     }
@@ -373,13 +407,27 @@ void topDoorProcess()
       topDoorStep ++;
       break;
     case 1:
-      if (dataIn[14])
+      if(dataIn[14] != lastDataIn[14])
       {
+        if (dataIn[14])
+        {
+          detectTopDoor = true;
+          timerDetectTopDoor = 0;
+        }
+      }
+      
+      
+      if(detectTopDoor & (timerDetectTopDoor > 0))
+      {
+        detectTopDoor = false;
         topDoorStop();
         topDoorState = 0;
         topDoorOpr = 0;
         topDoorStep ++;
       }
+
+      lastDataIn[14] = dataIn[14];
+
       break;
     }
   }
@@ -423,7 +471,7 @@ void getToolProcess()
 void dropMonitor() 
 {
 
-  if((timerDetectTool>25) & (monitorStep <2))
+  if((timerDetectTool>60) & (monitorStep <2))
     {
       monitorStep =2;
       Serial.println("124");//Action Fail
@@ -546,6 +594,16 @@ void timerTick()
   if(detectPosition)
   {
     timerDetectPosition ++;
+  }
+
+  if(detectFrontDoor)
+  {
+    timerDetectFrontDoor ++;
+  }
+
+  if(detectTopDoor)
+  {
+    timerDetectTopDoor ++;
   }
 
   if ((timerFrontDoor >= delayOpenTime) & (frontDoorState == 1))
